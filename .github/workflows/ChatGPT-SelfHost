@@ -1,0 +1,37 @@
+name: RDP Playit Tunnel Windows 2022 Self host
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-rdp-tunnel:
+    runs-on: self-hosted  # pastikan runner ini berjalan di Windows Server 2022
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Download and Install Playit
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/playit-cloud/playit-agent/releases/download/v0.15.26/playit-windows-x86_64-signed.exe" -OutFile "$env:USERPROFILE\playit.exe"
+          Start-Sleep -Seconds 5
+
+      - name: Enable RDP
+        run: |
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+
+      - name: Set RDP User Password
+        run: |
+          net user runneradmin "Arifkembir!1"
+
+      - name: Start Playit with Auth Key
+        env:
+          PLAYIT_AUTH_KEY: ${{ secrets.PL }}
+        run: |
+          Start-Process -FilePath "$env:USERPROFILE\playit.exe" -ArgumentList "--secret $env:PLAYIT_AUTH_KEY"
+
+      - name: Keep GitHub Runner Alive
+        run: |
+          Start-Sleep -Seconds 11800
