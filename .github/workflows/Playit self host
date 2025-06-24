@@ -2,6 +2,7 @@ name: RDP Playit Tunnel Windows 2022 Self host
 
 on:
   workflow_dispatch:
+runs-on: self-hosted
 
 jobs:
   setup-rdp-tunnel:
