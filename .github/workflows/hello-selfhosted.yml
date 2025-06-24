@@ -1,0 +1,12 @@
+name: Hello from Self-hosted
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: self-hosted
+
+    steps:
+      - name: Cetak pesan
+        run: echo "Halo! Ini dijalankan dari self-hosted runner 🎉"
